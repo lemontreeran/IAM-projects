@@ -1,0 +1,14 @@
+.idea/
+.project
+.settings/
+.sass-cache/
+*.classpath
+*.iml
+.classpath
+.pydevproject
+
+# Maven
+target
+
+server/.tern-project
+/bin/
