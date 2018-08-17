@@ -1,0 +1,226 @@
+-Create a new SSH key to use with Github
+ssh-keygen -t rsa -b 4096 -C "ran.xing@gmail.com"
+-Add your key to the ssh-agent
+1. Ensure ssh-agent is enabled:
+eval "$(ssh-agent -s)"
+2. Add your SSH key to the ssh-agent
+ssh-add ~/.ssh/id_rsa
+-Add your SSH key to your account
+pbcopy < ~/.ssh/id_rsa.pub
+-Copied key to GitHub
+-Clone your git repo
+git clone git@github.com:lemontreeran/oxAuth.git
+– Download Maven
+tar -xvf apache-maven-3.3.3-bin.tar.gz
+– Set Maven command in environment variable.
+~/.bash_profile
+export M2_HOME=/Users/mkyong/apache-maven-3.3.3
+export PATH=$PATH:$M2_HOME/bin
+- On the command-line in the same directory into which you cloned your source run:
+$ mvn eclipse:eclipse; mvn eclipse:clean
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+msg: Local modifications exist in repository (force=no)
+
+TASK: [forum | git checkout forum repo into {{ forum_code_dir }}] ************* 
+failed: [localhost] => {"failed": true}
+msg: Local modifications exist in repository (force=no).
+
+FATAL: all hosts have already failed -- aborting
+
+FIX:
+OPTION1: Go to /edx/app/forum/cs_comments_service and reset local changes with "sudo git reset --hard" then rerun "sudo /edx/bin/update cs_comments_service master"
+OPTION2: Add "force=yes" to playbooks/roles/forum/tasks/deploy.yml
+- name:  git checkout forum repo into {{ forum_code_dir }}
+  git: >
+    dest={{ forum_code_dir }} repo={{ forum_source_repo }} version={{ forum_version }}
+    accept_hostkey=yes
+    force=yes
+  sudo_user: "{{ forum_user }}"
+  register: forum_checkout
+  notify: restart the forum service
+  tags:
+    - install
+    - install:code
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Install Tomcat
+1.Download a binary distribution of the core module: apache-tomcat-8.0.26.tar.gz from here. I picked the tar.gz in Binary Distributions / Core section.
+2.Opening/unarchiving the archive will create a folder structure in your Downloads folder: (btw, this free Unarchiver app is perfect for all kinds of compressed files and superior to the built-in Archive Utility.app)
+~/Downloads/apache-tomcat-8.0.26
+3.Open to Terminal app to move the unarchived distribution to /usr/local
+sudo mkdir -p /usr/local
+sudo mv ~/Downloads/apache-tomcat-8.0.26 /usr/local
+4.To make it easy to replace this release with future releases, we are going to create a symbolic link that we are going to use when referring to Tomcat (after removing the old link, you might have from installing a previous version):
+sudo rm -f /Library/Tomcat
+sudo ln -s /usr/local/apache-tomcat-8.0.26 /Library/Tomcat
+5.Change ownership of the /Library/Tomcat folder hierarchy:
+sudo chown -R <your_username> /Library/Tomcat
+6.Make all scripts executable:
+sudo chmod +x /Library/Tomcat/bin/*.sh
+
+SAME as JBoss installation.
+
+
+
+/Users/lemontreeran/src/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1
+/Users/lemontreeran/src/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/conf/oxauth-ldap.properties
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Install Python
+
+第1步：下载Python3.3
+下载地址如下：
+Python3.3
+这里面有windows和mac os x下的安装程序，下载那个64位的安装程序（估计现在没有用32位的mac os x的吧）
+
+第2步：
+安装下载的img文件，安装完后的目录如下：
+/Library/Frameworks/Python.framework/Versions/3.3
+
+第3步：移动python的安装目录
+原来的安装目录见第2步，不过所有的python都在
+/System/Library/Frameworks/Python.framework/Versions
+目录中，所以最好使用下面的命令移动一下，当然不移动也可以。但后面步骤中的某些路径需要修改下。
+sudo mv /Library/Frameworks/Python.framework/Versions/3.3 /System/Library/Frameworks/Python.framework/Versions
+
+第4步：改变Python安装目录的用户组为wheel
+sudo chown -R root:wheel /System/Library/Frameworks/Python.framework/Versions/3.3
+python2.7的用户组就是wheel，3.3也照葫芦画瓢吧！
+
+第5步：修改Python当前安装目录的符号链接
+在 /System/Library/Frameworks/Python.framework/Versions/目录下有一个Current，这是一个目 录符号链接，指向当前的Python版本。原来指向2.7的，现在指向3.3。所以应先删除Current。然后重新建立Current符号链接，命令如 下：
+sudo rm /System/Library/Frameworks/Python.framework/Versions/Current
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.3 /System/Library/Frameworks/Python.framework/Versions/Current
+
+第6步：删除旧的命令符号链接
+在/usr/bin目录下有4个python命令的符号链接，使用下面的命令先删除
+sudo rm /usr/bin/pydoc
+sudo rm /usr/bin/python
+sudo rm /usr/bin/pythonw
+sudo rm /usr/bin/python-config
+sudo rm /usr/local/bin/python3.4m-config
+sudo rm /usr/local/bin/python3.4m
+sudo rm /usr/local/bin/python3.4-config
+sudo rm /usr/local/bin/python3.4-32
+sudo rm /usr/local/bin/python3.4
+sudo rm /usr/local/bin/python3-config
+sudo rm /usr/local/bin/python3-32
+sudo rm /usr/local/bin/python3
+
+sudo rm /usr/local/bin/pip3.4
+sudo rm /usr/local/bin/pip3
+
+第7步：重新建立新的命令符号链接
+将第6步删除的符号链接重新使用下面命令建立，它们都指向Python3.3了。
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.3/bin/pydoc3.3 /usr/bin/pydoc
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.3/bin/python3.3 /usr/bin/python
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.3/bin/pythonw3.3 /usr/bin/pythonw
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.3/bin/python3.3m-config /usr/bin/python-config
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.4/bin/python3.4m-config /usr/local/bin/python3.4m-config
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.4/bin/python3.4m /usr/local/bin/python3.4m
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.4/bin/python3.4-config /usr/local/bin/python3.4-config
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.4/bin/python3.4-32 /usr/local/bin/python3.4-32
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.4/bin/python3.4 /usr/local/bin/python3.4
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.4/bin/python3-config /usr/local/bin/python3-config
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.4/bin/python3-32 /usr/local/bin/python3-32
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.4/bin/python3 /usr/local/bin/python3
+
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.4/bin/pip3.4 /usr/local/bin/pip3.4
+sudo ln -s /System/Library/Frameworks/Python.framework/Versions/3.4/bin/pip3 /usr/local/bin/pip3
+
+
+第8步：更新/root/.bash_profile文件中的路径
+cd ~
+ vim .bash_profile 
+
+在.bash_profile插入下面的内容即可
+# Setting PATH for Python 3.3
+# The orginal version is saved in .bash_profile.pysave
+PATH="/System/Library/Frameworks/Python.framework/Versions/3.3/bin:${PATH}"
+export PATH
+
+ok，现在重新启动一下Console，然后执行python --version，得到的就是Python 3.3.3。如果在程序中，需要使用下面代码获取python版本
+import platform
+print(platform.python_version())
+
+如果还是用了如PyDev等IDE，仍然需要更新一下相关的路径。
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+python virtualenv虚拟环境配置
+
+一、安装virtualenv
+Note:已经安装了python3的这一步可能不要， python3自带了pyvenv，用这个就行，以前的 virtualenv myVenv --python=python3 老是报错
+1. 安装包安装
+到http://pypi.python.org/pypi/virtualenv#downloads下载最新的版本，解压缩后，运行python setup.py install即可。
+安装后，要确保你的系统path里能够找到virtualenv.py这个文件，否则就无法通过命令行来运行了。当然，也可以到安装目录里运行，这种做法是不推荐的。
+
+2. pip安装
+********************************
+I also run into this error recently and I think it is due to having multiple versions of easy_install and(!) multiple versions of python available.
+
+in my case I have the following versions available:
+easy_install
+easy_install-2.6
+easy_install-2.7
+easy_install-3.4
+after running
+
+sudo easy_install-2.7 pip
+I was able to (re)-install pip.
+********************************
+You should only ever install virtualenv and virtualenvwrapper on your base Python installation
+pip2.7 install --user virtualenv
+pip2.7 install --user virtualenvwrapper 
+pip3.4 --user install virtualenv
+pip3.4 --user install virtualenvwrapper 
+设置环境变量，把下面两行添加到~/.bashrc里。然后就可以使用virtualenvwrapper了
+export WORKON_HOME=~/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+    
+3. 创建虚拟环境
+Next, create a folder that will contain all your virtual environments:
+mkdir ~/.virtualenvs
+virtualenv ENV                     #ENV 为环境的名字，可以任意设置，其实就是一个文件夹
+                                   #virtualenv --no-site-packages --python=python2.7 env
+source ENV/bin/activate #这样进进入了virtualenv的虚拟开发环境。
+
+virtualenvwrapper命令 http://virtualenvwrapper.readthedocs.org/en/latest/command_ref.html
+    注意：mkvirtualenv可以使用virtualenv的参数，比如--python来指定python版本。创建虚拟环境后，会自动切换到此虚拟环境里。虚拟环境目录都在WORKON_HOME里。
+    列出虚拟环境：lsvirtualenv -b
+    切换虚拟环境：workon [虚拟环境名称]
+    查看环境里安装了哪些包：lssitepackages
+    进入当前环境的目录：cdvirtualenv [子目录名]
+    控制环境是否使用global site-packages：toggleglobalsitepackages
+    复制虚拟环境：cpvirtualenv [source] [dest]
+    退出虚拟环境：deactivate
+    删除虚拟环境：rmvirtualenv [虚拟环境名称]
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+如何设置pycharm的remote Python interpreters
+https://github.com/edx/edx-platform/wiki/Setting-up-PyCharm-for-edX-development
+Configure
+1. 打开PyCharm
+2. 在 Welcome to PyCharm 界面点击 Configure --> Preferences
+Preferences
+1. 在弹出的窗口搜索，project、interpreter等关键字均可
+2. 然后找到 Project Interpreter
+Project Interpreter
+1. 点击该界面的最右侧的一个锯齿形状的按钮
+2. 在下拉列表中有个 "Create VirtualEnv" 选项
+Create VirtualEnv
+1. 在弹出的对话框中输入要配置的环境信息：
+    1.1 Name中输入名称，如test
+    1.2 Location选择：选择配置好的virtualenv的默认目录，如/Users/oper/.virtualenvs/test
+    1.3 Base interpreter：
+    默认就好(我的是：/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7）
+创建项目
+1. 例如创建flask项目
+2. 选择flask项目
+3. Location选择 /User/oper/.virtualenvs/test/<项目名> 即选择了VirtualEnv环境的Location
+4. Interpreter选择刚刚创建的 VirutalEnv (名称为test的那个)
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
